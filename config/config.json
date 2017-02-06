@@ -1,0 +1,12 @@
+
+{
+   "development": {
+       "uploadPath":"/public/images/",
+
+
+       "pgConnectionString": "postgres://testuser:kuku@localhost:5432/testdb"
+   },
+   "production": {
+
+   }
+ }
