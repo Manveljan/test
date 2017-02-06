@@ -13,65 +13,35 @@ var params = {
     destWidth: 640,
     destHeight: 600
   },
-
   layers: [
-    {imagePath: 'img1.jpg', coords: [0, 0], width: 640, height: 360,
-      textData: {
-        text: 'bla bla bla',
-        size: '32pt',
-        color: '#DC143C',
-        opacity: '0.5',
-        shadowColor: '#0000FF',
-        offsetX: '5',
-        offsetY: '5',
-        // rotationAngle: '-0.3',
-        textStartCoords: [100, 200],
-        fileName: 'test1.png'
-      }
+    {imagePath: 'img1.jpg', coords: [0, 0], width: 640, height: 360, order: 1},
+    {textData: {
+      text: 'bla bla bla',
+      size: '32pt',
+      color: '#DC143C',
+      opacity: '0.5',
+      shadowColor: '#0000FF',
+      offsetX: '5',
+      offsetY: '5'
     },
-    {imagePath: 'img3.jpg', coords: [50, 50], width: 100, height: 80,
-      textData: {
-        text: 'bla bla bla',
-        size: '32pt',
-        color: '#DC143C',
-        opacity: '0.5',
-        shadowColor: '#0000FF',
-        offsetX: '5',
-        offsetY: '5',
-        // rotationAngle: '-0.3',
-        textStartCoords: [100, 200],
-        fileName: 'test2.png'
-      }
+      coords: [15, 300],
+      order: 2
     },
-    {imagePath: 'img2.jpg', coords: [0, 360], width: 320,  height: 240,
-      textData: {
-        text: 'bla bla bla',
-        size: '32pt',
-        color: '#DC143C',
-        opacity: '0.5',
-        shadowColor: '#0000FF',
-        offsetX: '5',
-        offsetY: '5',
-        // rotationAngle: '-0.3',
-        textStartCoords: [100, 200],
-        fileName: 'test3.png'
-      }
+    {textData: {
+      text: 'bla bla bla',
+      size: '32pt',
+      color: '#DC143C',
+      opacity: '0.5',
+      shadowColor: '#0000FF',
+      offsetX: '5',
+      offsetY: '5'
     },
-    {imagePath: 'img3.jpg', coords: [320, 360], width: 320, height: 240,
-      textData: {
-        text: 'bla bla bla',
-        size: '32pt',
-        color: '#DC143C',
-        opacity: '0.5',
-        shadowColor: '#0000FF',
-        offsetX: '5',
-        offsetY: '5',
-        // rotationAngle: '-0.3',
-        textStartCoords: [100, 200],
-        fileName: 'test4.png'
-      }
+      coords: [100, 300],
+      order: 2
     },
-    {imagePath: 'test.png', coords: [270, 170], width: 320,  height: 240,
+    {imagePath: 'img3.jpg', coords: [50, 50], width: 100, height: 80, order: 3},
+    {imagePath: 'img2.jpg', coords: [0, 360], width: 320, height: 240, order: 4},
+    {
       textData: {
         text: 'bla bla bla',
         size: '32pt',
@@ -79,32 +49,42 @@ var params = {
         opacity: '0.5',
         shadowColor: '#0000FF',
         offsetX: '5',
-        offsetY: '5',
-        // rotationAngle: '-0.3',
-        textStartCoords: [100, 200],
-        fileName: 'test5.png'
-      }
+        offsetY: '5'
+      },
+      coords: [150, 300],
+      order: 5
     }
   ]
 }
 
 router.get('/', function (req, res) {
-  //  return res.json({status: 'ok'})
-
-  if (params.length < 1) {
+  if (params.length < 1 && params.layers.length < 1) {
     return res.json({status: 'error', message: 'Params is empty'})
   }
-  return lib.createPngImage(params.layers.textData, textData).then(function (result) {
-    if (!result) {
-      return res.json({status: 'error', massage: 'can not draw image'})
-    }
 
-    return lib.drawedImagesStream(params.layers, params.canvasOption).then(function (streams) {
-      return Promise.map(streams, lib.writeImageToDisk)
+  return lib.getLayers(params).then(function (layers) {
+    return lib.drawedImagesStream(layers, params.canvasOption).then(function (streams) {
+      return Promise.map(streams, function (item) {
+        lib.writeImageToDisk(item, params.canvasOption.destName)
+      })
     }).then(function (result) {
       return res.json({status: result ? 'ok' : 'error'})
     })
   })
+
+  // return lib.createImagesFromText(params).then(function (result) {
+  //   if (!result) {
+  //     return res.json({status: 'error', massage: 'can not draw image'})
+  //   }
+  //   return res.json({status: 'error', massage: 'can not draw image'})
+  //   return lib.drawedImagesStream(params.layers, params.canvasOption).then(function (streams) {
+  //     return Promise.map(streams, function (item) {
+  //       lib.writeImageToDisk(item, params.canvasOption.destName)
+  //     })
+  //   }).then(function (result) {
+  //     return res.json({status: result ? 'ok' : 'error'})
+  //   })
+  // })
 })
 // request.post({url: 'http://service.com/upload', form: {key: 'value'}},
 //   function (err, httpResponse, body) { /* ... */ })

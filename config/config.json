@@ -2,8 +2,7 @@
 {
    "development": {
        "uploadPath":"/public/images/",
-
-
+       "tmpImagePrefix": "tmp_",
        "pgConnectionString": "postgres://testuser:kuku@localhost:5432/testdb"
    },
    "production": {
